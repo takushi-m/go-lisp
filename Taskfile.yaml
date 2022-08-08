@@ -6,3 +6,11 @@ tasks:
   default:
     cmds:
       - go run ./main.go
+
+  test:
+    cmds:
+      - go test ./...
+
+  vet:
+    cmds:
+      - go vet ./...
