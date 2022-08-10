@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/takushi-m/go-lisp/printer"
+	"github.com/takushi-m/go-lisp/reader"
+	"github.com/takushi-m/go-lisp/types"
 )
 
 type Rep struct {
@@ -21,14 +25,14 @@ func New(r io.Reader, w io.Writer, prompt string) Rep {
 	}
 }
 
-func (r Rep) Read() (string, bool, error) {
+func (r Rep) Read() (*types.Node, bool, error) {
 	if r.prompt != "" {
 		_, err := r.writer.WriteString(r.prompt)
 		if err != nil {
-			return "", false, err
+			return nil, false, err
 		}
 		if err := r.writer.Flush(); err != nil {
-			return "", false, err
+			return nil, false, err
 		}
 	}
 
@@ -36,14 +40,21 @@ func (r Rep) Read() (string, bool, error) {
 	got := r.scanner.Text()
 	err := r.scanner.Err()
 
-	return got, !done && err == nil, err
+	n, err := reader.ReadForm(reader.New(got))
+	if err != nil {
+		return nil, false, err
+	}
+
+	return n, !done && err == nil, err
 }
 
-func (r Rep) Eval(s string) string {
-	return s
+func (r Rep) Eval(n *types.Node) *types.Node {
+	return n
 }
 
-func (r Rep) Print(s string) error {
+func (r Rep) Print(n *types.Node) error {
+	s := printer.Print(n)
+
 	_, err := r.writer.WriteString(s)
 	if err != nil {
 		return err

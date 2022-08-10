@@ -8,16 +8,76 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestStep1(t *testing.T) {
+	for _, c := range []struct {
+		input  string
+		output string
+	}{
+		{
+			"(+ 1 2)",
+			"(+ 1 2)",
+		},
+		{
+			"()",
+			"()",
+		},
+		{
+			"( )",
+			"()",
+		},
+		{
+			"(nil)",
+			"(nil)",
+		},
+		{
+			"((3 4))",
+			"((3 4))",
+		},
+		{
+			"(+ 1 (+ 2 3))",
+			"(+ 1 (+ 2 3))",
+		},
+		{
+			"   ( +   1   (+   2 3   )   )",
+			"(+ 1 (+ 2 3))",
+		},
+		{
+			"(* 1 2)",
+			"(* 1 2)",
+		},
+		{
+			"(** 1 2)",
+			"(** 1 2)",
+		},
+		{
+			"(* -3 6)",
+			"(* -3 6)",
+		},
+		{
+			"(()())",
+			"(() ())",
+		},
+		{
+			"(1 2, 3,,,,),,",
+			"(1 2 3)",
+		},
+	} {
+		buf := &bytes.Buffer{}
+		rep := New(strings.NewReader(c.input), buf, "")
+		stop, err := rep.Run()
+
+		assert.Equal(t, false, stop)
+		assert.NoError(t, err)
+		assert.Equal(t, c.output, buf.String())
+	}
+}
+
 func TestStep0(t *testing.T) {
 	cases := []string{
 		"abcABC123",
-		"hello mal world",
-		"\"[]{}\"'* ;:()",
-		"hello world abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 (;:() []{}\"'* ;:() []{}\"'* ;:() []{}\"'*)",
 		"!",
 		"&",
 		"+",
-		",",
 		"-",
 		"/",
 		"<",
