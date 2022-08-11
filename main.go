@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/takushi-m/go-lisp/parser"
 	"github.com/takushi-m/go-lisp/printer"
 	"github.com/takushi-m/go-lisp/reader"
 	"github.com/takushi-m/go-lisp/types"
@@ -40,7 +41,8 @@ func (r Rep) Read() (*types.Node, bool, error) {
 	got := r.scanner.Text()
 	err := r.scanner.Err()
 
-	n, err := reader.ReadForm(reader.New(got))
+	p := parser.New(reader.New(got))
+	n, err := p.ParseForm()
 	if err != nil {
 		return nil, false, err
 	}
