@@ -18,6 +18,14 @@ func Print(n *types.Node) string {
 			return fmt.Sprintf("%d", *n.Number)
 		case types.TypeSymbol:
 			return *n.Symbol
+		case types.TypeBool:
+			if *n.Bool {
+				return "true"
+			} else {
+				return "false"
+			}
+		case types.TypeNil:
+			return "nil"
 		default:
 			return ""
 		}

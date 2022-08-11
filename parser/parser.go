@@ -62,7 +62,8 @@ func (p *Parser) ParseList() (*types.Node, error) {
 }
 
 var (
-	numberReg = regexp.MustCompile("^[1-9][0-9]*$")
+	numberRegExp = regexp.MustCompile("^[1-9][0-9]*$")
+	boolRegExp   = regexp.MustCompile("^true|false$")
 )
 
 func (p *Parser) ParseAtom() (*types.Node, error) {
@@ -74,11 +75,20 @@ func (p *Parser) ParseAtom() (*types.Node, error) {
 	}
 
 	switch {
-	case numberReg.MatchString(string(t)):
+	case numberRegExp.MatchString(string(t)):
 		var i int64
 		_, _ = fmt.Sscanf(string(t), "%d", &i)
 		n.Type = types.TypeNumber
 		n.Number = &i
+	case boolRegExp.MatchString(string(t)):
+		var v bool
+		if string(t) == "true" {
+			v = true
+		}
+		n.Type = types.TypeBool
+		n.Bool = &v
+	case string(t) == "nil":
+		n.Type = types.TypeNil
 	default:
 		s := string(t)
 		n.Type = types.TypeSymbol

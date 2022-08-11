@@ -61,6 +61,18 @@ func TestStep1(t *testing.T) {
 			"(1 2, 3,,,,),,",
 			"(1 2 3)",
 		},
+		{
+			"true",
+			"true",
+		},
+		{
+			"false",
+			"false",
+		},
+		{
+			"nil",
+			"nil",
+		},
 	} {
 		buf := &bytes.Buffer{}
 		rep := New(strings.NewReader(c.input), buf, "")
