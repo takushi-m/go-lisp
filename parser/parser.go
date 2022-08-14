@@ -1,11 +1,16 @@
 package parser
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 
 	"github.com/takushi-m/go-lisp/reader"
 	"github.com/takushi-m/go-lisp/types"
+)
+
+var (
+	ErrInvalidString = errors.New("invalid string")
 )
 
 type Parser struct {
@@ -63,7 +68,7 @@ func (p *Parser) ParseList() (*types.Node, error) {
 
 var (
 	numberRegExp = regexp.MustCompile("^[1-9][0-9]*$")
-	boolRegExp   = regexp.MustCompile("^true|false$")
+	stringRegExp = regexp.MustCompile("\"(?:\\\\.|[^\\\\\"])*\"?")
 )
 
 func (p *Parser) ParseAtom() (*types.Node, error) {
@@ -80,15 +85,21 @@ func (p *Parser) ParseAtom() (*types.Node, error) {
 		_, _ = fmt.Sscanf(string(t), "%d", &i)
 		n.Type = types.TypeNumber
 		n.Number = &i
-	case boolRegExp.MatchString(string(t)):
-		var v bool
-		if string(t) == "true" {
-			v = true
-		}
+	case string(t) == "true" || string(t) == "false":
+		v := string(t) == "true"
 		n.Type = types.TypeBool
 		n.Bool = &v
 	case string(t) == "nil":
 		n.Type = types.TypeNil
+	case stringRegExp.MatchString(string(t)):
+		l := len(t)
+		if string(t)[l-1] != '"' {
+			return nil, ErrInvalidString
+		}
+
+		s := string(t)[1 : l-1]
+		n.Type = types.TypeString
+		n.String = &s
 	default:
 		s := string(t)
 		n.Type = types.TypeSymbol

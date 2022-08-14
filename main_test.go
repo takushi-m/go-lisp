@@ -73,6 +73,10 @@ func TestStep1(t *testing.T) {
 			"nil",
 			"nil",
 		},
+		{
+			"\"abc\"",
+			"\"abc\"",
+		},
 	} {
 		buf := &bytes.Buffer{}
 		rep := New(strings.NewReader(c.input), buf, "")

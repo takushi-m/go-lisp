@@ -26,6 +26,8 @@ func Print(n *types.Node) string {
 			}
 		case types.TypeNil:
 			return "nil"
+		case types.TypeString:
+			return "\"" + *n.String + "\""
 		default:
 			return ""
 		}

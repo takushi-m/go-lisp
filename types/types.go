@@ -8,6 +8,7 @@ const (
 	TypeSymbol
 	TypeBool
 	TypeNil
+	TypeString
 )
 
 type Node struct {
@@ -17,6 +18,7 @@ type Node struct {
 	Number *int64
 	Symbol *string
 	Bool   *bool
+	String *string
 }
 
 func NewNode() *Node {
